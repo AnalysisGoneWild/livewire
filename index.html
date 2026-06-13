@@ -1,0 +1,515 @@
+<!-- LiveWire v2.3 (index build) -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>LiveWire v2.3</title>
+
+<style>
+/* --------------------------------------------------
+   GLOBAL THEME — NEON BLUE + VIOLET
+-------------------------------------------------- */
+:root {
+    --neon-blue: #4dd0ff;
+    --neon-violet: #b388ff;
+    --bg-dark: #0b0f1a;
+    --glass-bg: rgba(255,255,255,0.08);
+    --glass-border: rgba(255,255,255,0.25);
+    --text-light: #e8e8ff;
+    --menu-width: 260px;
+    --transition-fast: 0.25s ease;
+    --transition-medium: 0.45s ease;
+    --transition-slow: 0.8s ease;
+}
+
+/* --------------------------------------------------
+   BODY + DEVICE CONTAINER
+-------------------------------------------------- */
+body {
+    margin: 0;
+    padding: 0;
+    background: var(--bg-dark);
+    font-family: system-ui, sans-serif;
+    color: var(--text-light);
+    height: 100vh;
+    overflow: hidden;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    perspective: 2000px;
+}
+
+.device {
+    width: 360px;
+    height: 720px;
+    background: #111;
+    border-radius: 28px;
+    border: 4px solid #000;
+    box-shadow: 0 0 40px rgba(0,0,0,0.6);
+    overflow: hidden;
+    position: relative;
+    transform-style: preserve-3d;
+    transition: transform var(--transition-slow);
+}
+
+.device.flipped {
+    transform: rotateY(180deg);
+}
+
+/* --------------------------------------------------
+   SLIDE-IN MENU (PUSH CONTENT)
+-------------------------------------------------- */
+.menu {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: var(--menu-width);
+    height: 100%;
+    background: rgba(20,20,40,0.95);
+    backdrop-filter: blur(12px);
+    border-right: 2px solid var(--neon-blue);
+    box-shadow: 0 0 20px var(--neon-blue);
+    transform: translateX(-100%);
+    transition: transform var(--transition-medium);
+    z-index: 20;
+    padding: 20px;
+}
+
+.menu.open {
+    transform: translateX(0);
+}
+
+.menu h2 {
+    margin-top: 0;
+    font-size: 24px;
+    color: var(--neon-blue);
+}
+
+.menu button {
+    width: 100%;
+    margin: 10px 0;
+}
+
+/* Overlay behind menu */
+.overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.4);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity var(--transition-medium);
+    z-index: 15;
+}
+
+.overlay.visible {
+    opacity: 1;
+    pointer-events: auto;
+}
+
+/* --------------------------------------------------
+   CONTENT WRAPPER (PUSHED BY MENU)
+-------------------------------------------------- */
+.content {
+    width: 100%;
+    height: 100%;
+    position: relative;
+    transition: transform var(--transition-medium);
+}
+
+.content.shifted {
+    transform: translateX(var(--menu-width));
+}
+
+/* --------------------------------------------------
+   SCREENS
+-------------------------------------------------- */
+.screen {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    padding: 20px;
+    box-sizing: border-box;
+    display: none;
+    overflow-y: auto;
+}
+
+.screen.active {
+    display: block;
+}
+
+/* --------------------------------------------------
+   HEADER
+-------------------------------------------------- */
+.header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.hamburger {
+    font-size: 26px;
+    cursor: pointer;
+    color: var(--neon-blue);
+    transition: color var(--transition-fast);
+}
+
+.hamburger:hover {
+    color: var(--neon-violet);
+}
+
+h1 {
+    margin: 0;
+    font-size: 28px;
+}
+
+/* --------------------------------------------------
+   BUTTONS
+-------------------------------------------------- */
+button {
+    padding: 14px;
+    margin: 10px 0;
+    background: var(--glass-bg);
+    border: 2px solid var(--glass-border);
+    border-radius: 12px;
+    color: var(--text-light);
+    font-size: 18px;
+    cursor: pointer;
+    backdrop-filter: blur(8px);
+    transition: 
+        background var(--transition-fast),
+        box-shadow var(--transition-fast),
+        transform var(--transition-fast);
+}
+
+button:hover {
+    background: rgba(255,255,255,0.15);
+    box-shadow: 0 0 12px var(--neon-blue);
+    transform: translateY(-2px);
+}
+
+/* --------------------------------------------------
+   GLASS-NEON CARDS (ADAPTIVE)
+-------------------------------------------------- */
+.card {
+    background: var(--glass-bg);
+    border: 1px solid var(--glass-border);
+    border-radius: 16px;
+    padding: 16px;
+    margin: 12px 0;
+    backdrop-filter: blur(10px);
+    box-shadow: 0 0 10px rgba(77,208,255,0.25);
+    transition: 
+        box-shadow var(--transition-fast),
+        transform var(--transition-fast);
+}
+
+/* Dynamic glow */
+.card:hover {
+    box-shadow: 0 0 18px var(--neon-blue), 0 0 28px var(--neon-violet);
+    transform: translateY(-4px);
+}
+
+/* Adaptive sizing */
+@media (min-width: 500px) {
+    .card {
+        padding: 22px;
+        margin: 18px 0;
+        box-shadow: 0 0 14px rgba(77,208,255,0.35);
+    }
+}
+
+/* --------------------------------------------------
+   FORM FIELDS
+-------------------------------------------------- */
+input, textarea, select {
+    width: 100%;
+    padding: 12px;
+    margin: 8px 0 16px 0;
+    border-radius: 10px;
+    border: 1px solid var(--glass-border);
+    background: rgba(255,255,255,0.1);
+    color: var(--text-light);
+    font-size: 16px;
+    backdrop-filter: blur(6px);
+}
+
+/* --------------------------------------------------
+   DIAGNOSTICS PANEL
+-------------------------------------------------- */
+#diagnostics {
+    background: #000;
+    border-radius: 10px;
+    padding: 10px;
+    height: 180px;
+    overflow-y: auto;
+    font-size: 14px;
+    display: none;
+}
+
+#diagnostics.visible {
+    display: block;
+}
+
+/* --------------------------------------------------
+   FLIP BACK SCREEN
+-------------------------------------------------- */
+.back-screen {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    backface-visibility: hidden;
+    transform: rotateY(180deg);
+    padding: 20px;
+    box-sizing: border-box;
+}
+</style>
+</head>
+
+<body>
+
+<div class="device" id="device">
+
+    <!-- Slide-in Menu -->
+    <div class="menu" id="menu">
+        <h2>LiveWire</h2>
+        <button onclick="showScreen('home')">Home</button>
+        <button onclick="showScreen('venues')">Venues</button>
+        <button onclick="showScreen('add')">Add Venue</button>
+        <button onclick="showScreen('settings')">Settings</button>
+    </div>
+
+    <!-- Overlay -->
+    <div class="overlay" id="overlay" onclick="toggleMenu()"></div>
+
+    <!-- Content Wrapper -->
+    <div class="content" id="content">
+
+        <!-- HOME SCREEN -->
+        <div class="screen active" id="home">
+            <div class="header">
+                <div class="hamburger" onclick="toggleMenu()">☰</div>
+                <h1>LiveWire</h1>
+            </div>
+
+            <button onclick="flip()">Flip Device</button>
+            <button onclick="toggleDiagnostics()">Toggle Diagnostics</button>
+
+            <div id="diagnostics"></div>
+        </div>
+
+        <!-- VENUE LIST -->
+        <div class="screen" id="venues">
+            <div class="header">
+                <div class="hamburger" onclick="toggleMenu()">☰</div>
+                <h1>Venues</h1>
+            </div>
+
+            <select id="sort" onchange="renderVenues()">
+                <option value="name">Sort by Name</option>
+                <option value="created">Recently Added</option>
+                <option value="updated">Recently Updated</option>
+            </select>
+
+            <div id="venueList"></div>
+        </div>
+
+        <!-- ADD VENUE -->
+        <div class="screen" id="add">
+            <div class="header">
+                <div class="hamburger" onclick="toggleMenu()">☰</div>
+                <h1>Add Venue</h1>
+            </div>
+
+            <input id="addName" placeholder="Venue Name" />
+            <input id="addAddress" placeholder="Address" />
+            <textarea id="addNotes" placeholder="Notes"></textarea>
+            <input id="addTags" placeholder="Tags (comma separated)" />
+
+            <button onclick="saveVenue()">Save Venue</button>
+        </div>
+
+        <!-- EDIT VENUE -->
+        <div class="screen" id="edit">
+            <div class="header">
+                <div class="hamburger" onclick="toggleMenu()">☰</div>
+                <h1>Edit Venue</h1>
+            </div>
+
+            <input id="editName" />
+            <input id="editAddress" />
+            <textarea id="editNotes"></textarea>
+            <input id="editTags" />
+
+            <button onclick="updateVenue()">Update Venue</button>
+        </div>
+
+        <!-- SETTINGS -->
+        <div class="screen" id="settings">
+            <div class="header">
+                <div class="hamburger" onclick="toggleMenu()">☰</div>
+                <h1>Settings</h1>
+            </div>
+
+            <button onclick="toggleDiagnostics()">Toggle Diagnostics</button>
+        </div>
+
+    </div>
+
+    <!-- BACK SIDE -->
+    <div class="back-screen">
+        <h1>Back Side</h1>
+        <button onclick="flip()">Flip Back</button>
+    </div>
+
+</div>
+
+<script>
+/* --------------------------------------------------
+   STATE
+-------------------------------------------------- */
+let venues = JSON.parse(localStorage.getItem("venues") || "[]");
+let editingId = null;
+
+/* --------------------------------------------------
+   MENU
+-------------------------------------------------- */
+function toggleMenu() {
+    const menu = document.getElementById("menu");
+    const overlay = document.getElementById("overlay");
+    const content = document.getElementById("content");
+
+    const open = menu.classList.toggle("open");
+    overlay.classList.toggle("visible", open);
+    content.classList.toggle("shifted", open);
+}
+
+/* --------------------------------------------------
+   SCREEN NAVIGATION
+-------------------------------------------------- */
+function showScreen(id) {
+    document.querySelectorAll(".screen").forEach(s => s.classList.remove("active"));
+    document.getElementById(id).classList.add("active");
+    toggleMenu();
+}
+
+/* --------------------------------------------------
+   FLIP
+-------------------------------------------------- */
+function flip() {
+    document.getElementById("device").classList.toggle("flipped");
+    log("Device flipped");
+}
+
+/* --------------------------------------------------
+   DIAGNOSTICS
+-------------------------------------------------- */
+function log(msg) {
+    const box = document.getElementById("diagnostics");
+    const time = new Date().toLocaleTimeString();
+    box.innerHTML += `[${time}] ${msg}<br>`;
+    box.scrollTop = box.scrollHeight;
+}
+
+function toggleDiagnostics() {
+    document.getElementById("diagnostics").classList.toggle("visible");
+}
+
+/* --------------------------------------------------
+   VENUE CRUD
+-------------------------------------------------- */
+function saveVenue() {
+    const name = document.getElementById("addName").value.trim();
+    if (!name) return;
+
+    const venue = {
+        id: Date.now(),
+        name,
+        address: document.getElementById("addAddress").value.trim(),
+        notes: document.getElementById("addNotes").value.trim(),
+        tags: document.getElementById("addTags").value.trim(),
+        created: Date.now(),
+        updated: Date.now()
+    };
+
+    venues.push(venue);
+    localStorage.setItem("venues", JSON.stringify(venues));
+
+    log(`Added venue: ${name}`);
+    showScreen("venues");
+    renderVenues();
+}
+
+function editVenue(id) {
+    editingId = id;
+    const v = venues.find(x => x.id === id);
+
+    document.getElementById("editName").value = v.name;
+    document.getElementById("editAddress").value = v.address;
+    document.getElementById("editNotes").value = v.notes;
+    document.getElementById("editTags").value = v.tags;
+
+    showScreen("edit");
+}
+
+function updateVenue() {
+    const v = venues.find(x => x.id === editingId);
+
+    v.name = document.getElementById("editName").value.trim();
+    v.address = document.getElementById("editAddress").value.trim();
+    v.notes = document.getElementById("editNotes").value.trim();
+    v.tags = document.getElementById("editTags").value.trim();
+    v.updated = Date.now();
+
+    localStorage.setItem("venues", JSON.stringify(venues));
+
+    log(`Updated venue: ${v.name}`);
+    showScreen("venues");
+    renderVenues();
+}
+
+function deleteVenue(id) {
+    venues = venues.filter(v => v.id !== id);
+    localStorage.setItem("venues", JSON.stringify(venues));
+    log("Venue deleted");
+    renderVenues();
+}
+
+/* --------------------------------------------------
+   RENDER VENUES
+-------------------------------------------------- */
+function renderVenues() {
+    const list = document.getElementById("venueList");
+    list.innerHTML = "";
+
+    const sort = document.getElementById("sort").value;
+
+    const sorted = [...venues].sort((a,b) => {
+        if (sort === "name") return a.name.localeCompare(b.name);
+        if (sort === "created") return b.created - a.created;
+        if (sort === "updated") return b.updated - a.updated;
+    });
+
+    sorted.forEach(v => {
+        const card = document.createElement("div");
+        card.className = "card";
+        card.innerHTML = `
+            <strong>${v.name}</strong><br>
+            <small>${v.address}</small><br>
+            <small>${v.tags}</small><br><br>
+            <button onclick="editVenue(${v.id})">Edit</button>
+            <button onclick="deleteVenue(${v.id})">Delete</button>
+        `;
+        list.appendChild(card);
+    });
+}
+
+renderVenues();
+log("LiveWire v2.3 loaded");
+</script>
+
+</body>
+</html>
