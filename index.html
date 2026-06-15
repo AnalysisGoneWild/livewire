@@ -3,302 +3,144 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>LiveWire</title>
+<title>LiveWire v2.2</title>
 
 <style>
-/* ---------------------------------------------------------
-   GLOBAL THEME VARIABLES
---------------------------------------------------------- */
-:root {
-  --bg: #f7f7f7;
-  --fg: #111;
-  --accent: #007aff;
-  --card-bg: #ffffff;
-  --border: #d0d0d0;
-  --pill-bg: #e5e5e5;
-  --pill-fg: #111;
-}
+    body {
+        margin: 0;
+        padding: 0;
+        background: #111;
+        color: white;
+        font-family: system-ui, sans-serif;
+        height: 100vh;
+        overflow: hidden;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        perspective: 2000px;
+    }
 
-/* DAY PALETTE A */
-.theme-a {
-  --bg: #f7f7f7;
-  --fg: #111;
-  --accent: #007aff;
-  --card-bg: #ffffff;
-  --border: #d0d0d0;
-  --pill-bg: #e5e5e5;
-  --pill-fg: #111;
-}
+    .device {
+        width: 360px;
+        height: 720px;
+        background: #222;
+        border-radius: 28px;
+        border: 4px solid #000;
+        box-shadow: 0 0 40px rgba(0,0,0,0.6);
+        overflow: hidden;
+        transform-style: preserve-3d;
+        transition: transform 0.9s ease;
+        position: relative;
+    }
 
-/* DAY PALETTE B */
-.theme-b {
-  --bg: #fff8f0;
-  --fg: #3a2e1f;
-  --accent: #ff7a00;
-  --card-bg: #ffffff;
-  --border: #e2c9a8;
-  --pill-bg: #ffe2c4;
-  --pill-fg: #3a2e1f;
-}
+    .device.flipped {
+        transform: rotateY(180deg);
+    }
 
-/* DAY PALETTE C */
-.theme-c {
-  --bg: #eef7ff;
-  --fg: #0f1b2d;
-  --accent: #0066cc;
-  --card-bg: #ffffff;
-  --border: #bcd4f0;
-  --pill-bg: #d9eaff;
-  --pill-fg: #0f1b2d;
-}
+    .screen {
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        backface-visibility: hidden;
+        display: flex;
+        flex-direction: column;
+        padding: 20px;
+        box-sizing: border-box;
+    }
 
-/* DAY PALETTE D */
-.theme-d {
-  --bg: #f0fff4;
-  --fg: #0f2d1b;
-  --accent: #00a86b;
-  --card-bg: #ffffff;
-  --border: #b8e6cf;
-  --pill-bg: #d6f5e6;
-  --pill-fg: #0f2d1b;
-}
+    .back {
+        transform: rotateY(180deg);
+        background: #1a1a1a;
+    }
 
-/* NIGHT MODE */
-.night {
-  --bg: #0d0d0d;
-  --fg: #f5f5f5;
-  --accent: #4da3ff;
-  --card-bg: #1a1a1a;
-  --border: #333;
-  --pill-bg: #333;
-  --pill-fg: #f5f5f5;
-}
+    h1 {
+        margin-top: 0;
+        font-size: 28px;
+        text-align: center;
+        letter-spacing: 1px;
+    }
 
-/* ---------------------------------------------------------
-   BASE LAYOUT
---------------------------------------------------------- */
-body {
-  margin: 0;
-  font-family: system-ui, sans-serif;
-  background: var(--bg);
-  color: var(--fg);
-  transition: background 0.3s, color 0.3s;
-}
+    button {
+        padding: 14px;
+        margin: 10px 0;
+        background: #ff0066;
+        border: none;
+        border-radius: 10px;
+        color: white;
+        font-size: 18px;
+        cursor: pointer;
+        transition: 0.2s;
+    }
 
-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 14px 20px;
-  border-bottom: 1px solid var(--border);
-  background: var(--card-bg);
-  position: sticky;
-  top: 0;
-  z-index: 10;
-}
+    button:hover {
+        background: #ff3385;
+    }
 
-h1 {
-  margin: 0;
-  font-size: 22px;
-  font-weight: 600;
-}
-
-.controls {
-  display: flex;
-  gap: 10px;
-}
-
-button {
-  padding: 8px 14px;
-  border-radius: 8px;
-  border: 1px solid var(--border);
-  background: var(--card-bg);
-  color: var(--fg);
-  cursor: pointer;
-  font-size: 14px;
-  transition: 0.2s;
-}
-
-button:hover {
-  border-color: var(--accent);
-  color: var(--accent);
-}
-
-#themeBtn {
-  font-weight: 600;
-}
-
-#nightBtn {
-  font-weight: 600;
-}
-
-/* ---------------------------------------------------------
-   INPUT AREA
---------------------------------------------------------- */
-#inputArea {
-  padding: 20px;
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-}
-
-input {
-  padding: 10px;
-  border-radius: 8px;
-  border: 1px solid var(--border);
-  background: var(--card-bg);
-  color: var(--fg);
-  font-size: 15px;
-}
-
-textarea {
-  padding: 10px;
-  border-radius: 8px;
-  border: 1px solid var(--border);
-  background: var(--card-bg);
-  color: var(--fg);
-  font-size: 15px;
-  min-height: 120px;
-}
-
-/* ---------------------------------------------------------
-   TRACK LIST
---------------------------------------------------------- */
-#tracks {
-  padding: 20px;
-  display: flex;
-  flex-direction: column;
-  gap: 14px;
-}
-
-.track {
-  padding: 14px;
-  border-radius: 10px;
-  background: var(--card-bg);
-  border: 1px solid var(--border);
-}
-
-.track-title {
-  font-size: 17px;
-  font-weight: 600;
-  margin-bottom: 6px;
-}
-
-.pill {
-  display: inline-flex;
-  align-items: center;
-  padding: 2px 8px;
-  border-radius: 999px;
-  font-size: 11px;
-  background: var(--pill-bg);
-  color: var(--pill-fg);
-  margin-right: 6px;
-}
+    .log {
+        margin-top: 20px;
+        padding: 10px;
+        background: #000;
+        border-radius: 8px;
+        height: 200px;
+        overflow-y: auto;
+        font-size: 14px;
+    }
 </style>
 </head>
 
-<body class="theme-a">
+<body>
 
-<header>
-  <h1>LiveWire</h1>
-  <div class="controls">
-    <button id="themeBtn">Theme</button>
-    <button id="nightBtn">Night</button>
-  </div>
-</header>
+<div class="device" id="device">
+    <!-- FRONT SCREEN -->
+    <div class="screen front">
+        <h1>LiveWire v2.2</h1>
+        <button onclick="flip()">Flip Device</button>
+        <button onclick="addVenue()">Add Venue</button>
+        <button onclick="clearVenues()">Clear Venues</button>
+        <div class="log" id="log"></div>
+    </div>
 
-<div id="inputArea">
-  <input id="urlInput" placeholder="Paste a URL to scrape…" />
-  <textarea id="notesInput" placeholder="Or type/paste tracklist manually…"></textarea>
-  <button id="saveBtn">Save</button>
+    <!-- BACK SCREEN -->
+    <div class="screen back">
+        <h1>Back Side</h1>
+        <button onclick="flip()">Flip Back</button>
+    </div>
 </div>
 
-<div id="tracks"></div>
-
 <script>
-/* ---------------------------------------------------------
-   THEME CYCLER + NIGHT MODE
---------------------------------------------------------- */
-let themes = ["theme-a", "theme-b", "theme-c", "theme-d"];
-let themeIndex = 0;
-let night = false;
+    const device = document.getElementById("device");
+    const logBox = document.getElementById("log");
 
-const body = document.body;
-const themeBtn = document.getElementById("themeBtn");
-const nightBtn = document.getElementById("nightBtn");
+    function flip() {
+        device.classList.toggle("flipped");
+        log("Device flipped");
+    }
 
-themeBtn.onclick = () => {
-  if (night) return; // disable cycling while in night mode
-  themeIndex = (themeIndex + 1) % themes.length;
-  body.className = themes[themeIndex];
-};
+    function log(msg) {
+        const time = new Date().toLocaleTimeString();
+        logBox.innerHTML += `[${time}] ${msg}<br>`;
+        logBox.scrollTop = logBox.scrollHeight;
+    }
 
-nightBtn.onclick = () => {
-  night = !night;
-  if (night) {
-    body.classList.add("night");
-  } else {
-    body.classList.remove("night");
-    body.className = themes[themeIndex];
-  }
-};
+    function addVenue() {
+        const name = prompt("Enter venue name:");
+        if (!name) return;
 
-/* ---------------------------------------------------------
-   SCRAPING + PARSING
---------------------------------------------------------- */
-async function scrapeURL(url) {
-  try {
-    const res = await fetch(`https://api.allorigins.win/get?url=${encodeURIComponent(url)}`);
-    const data = await res.json();
-    return data.contents;
-  } catch (e) {
-    alert("Scrape failed.");
-    return "";
-  }
-}
+        let venues = JSON.parse(localStorage.getItem("venues") || "[]");
+        venues.push({ name, added: new Date().toISOString() });
+        localStorage.setItem("venues", JSON.stringify(venues));
 
-function parseTracks(text) {
-  const lines = text.split("\n").map(l => l.trim()).filter(l => l);
-  return lines.map(l => ({ title: l }));
-}
+        log(`Added venue: ${name}`);
+    }
 
-/* ---------------------------------------------------------
-   RENDER
---------------------------------------------------------- */
-function renderTracks(list) {
-  const container = document.getElementById("tracks");
-  container.innerHTML = "";
+    function clearVenues() {
+        if (confirm("Clear all saved venues?")) {
+            localStorage.removeItem("venues");
+            log("All venues cleared");
+        }
+    }
 
-  list.forEach(t => {
-    const div = document.createElement("div");
-    div.className = "track";
-
-    div.innerHTML = `
-      <div class="track-title">${t.title}</div>
-      <span class="pill">Track</span>
-    `;
-
-    container.appendChild(div);
-  });
-}
-
-/* ---------------------------------------------------------
-   SAVE HANDLER
---------------------------------------------------------- */
-document.getElementById("saveBtn").onclick = async () => {
-  const url = document.getElementById("urlInput").value.trim();
-  const notes = document.getElementById("notesInput").value.trim();
-
-  let text = notes;
-
-  if (url) {
-    const scraped = await scrapeURL(url);
-    text = scraped;
-  }
-
-  const tracks = parseTracks(text);
-  renderTracks(tracks);
-};
+    log("LiveWire v2.2 loaded");
 </script>
 
 </body>
